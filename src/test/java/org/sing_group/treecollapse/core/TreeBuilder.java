@@ -16,40 +16,38 @@ public class TreeBuilder {
 class TreeNodeBuilder {
   private String name;
   private List<TreeNodeBuilder> children = new LinkedList<>();
-  
+
   public TreeNodeBuilder withChildren(List<TreeNodeBuilder> children) {
     this.children = children;
-    
+
     return this;
   }
-  
+
   public TreeNode build() {
     return new MutableTreeNode(new TreeNode() {
 
       @Override
       public List<TreeNode> getChildren() {
-        return children.stream().map((e)-> e.build()).collect(Collectors.toList());
+        return children.stream().map((e) -> e.build()).collect(Collectors.toList());
       }
 
       @Override
       public String getName() {
         return name;
       }
-      
+
     });
   }
-  
-  
+
   public static TreeNodeBuilder node(String name) {
     TreeNodeBuilder builder = new TreeNodeBuilder();
     builder.name = name;
-    return builder;  
+    return builder;
   }
-  
+
   public static TreeNodeBuilder node() {
     TreeNodeBuilder builder = new TreeNodeBuilder();
     builder.name = null;
-    return builder;  
+    return builder;
   }
-  
 }

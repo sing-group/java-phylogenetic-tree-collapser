@@ -1,4 +1,4 @@
-package treecollapse.core;
+package org.sing_group.treecollapse.core;
 
 import org.hamcrest.Description;
 import org.hamcrest.Factory;

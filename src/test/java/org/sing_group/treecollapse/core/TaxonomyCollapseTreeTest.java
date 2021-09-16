@@ -4,8 +4,8 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.sing_group.treecollapse.core.TreeBuilder.root;
+import static org.sing_group.treecollapse.core.TreeMatcher.equalTo;
 import static org.sing_group.treecollapse.core.TreeNodeBuilder.node;
-import static treecollapse.core.TreeMatcher.equalTo;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,21 +26,27 @@ public class TaxonomyCollapseTreeTest {
       asList(
         node("T1").withChildren(
           asList(
-            node("T1.1").withChildren(asList(
-              node("s1"),
-              node("s6")
+            node("T1.1").withChildren(
+              asList(
+                node("s1"),
+                node("s6")
 
-            )),
-            node("T1.2").withChildren(asList(
-              node("s2"),
-              node("s3")
-            ))
+              )
+            ),
+            node("T1.2").withChildren(
+              asList(
+                node("s2"),
+                node("s3")
+              )
+            )
           )
         ),
-        node("T2").withChildren(asList(
-          node("s4"),
-          node("s5")
-        ))
+        node("T2").withChildren(
+          asList(
+            node("s4"),
+            node("s5")
+          )
+        )
       )
     ).build();
   }
@@ -48,15 +54,19 @@ public class TaxonomyCollapseTreeTest {
   private TreeNode flatTaxonomy() {
     return root("root").withChildren(
       asList(
-        node("G1").withChildren(asList(
-          node("s1")
+        node("G1").withChildren(
+          asList(
+            node("s1")
 
-        )),
-        node("G2").withChildren(asList(
-          node("s2"),
-          node("s3"),
-          node("s4")
-        ))
+          )
+        ),
+        node("G2").withChildren(
+          asList(
+            node("s2"),
+            node("s3"),
+            node("s4")
+          )
+        )
 
       )
     ).build();
@@ -75,7 +85,6 @@ public class TaxonomyCollapseTreeTest {
         node("s4.1")
       )
     ).build();
-
   }
 
   private TreeNode collapsedSimpleTree() {
@@ -87,7 +96,7 @@ public class TaxonomyCollapseTreeTest {
       )
     ).build();
   }
-  
+
   private TreeNode collapsedSimpleTreeWithFlatTaxonomy() {
     return root("root").withChildren(
       asList(
@@ -185,10 +194,12 @@ public class TaxonomyCollapseTreeTest {
   public void testSimpleCollapse2() {
     baseTest(simpleTree2(), collapsedSimpleTree2(), taxonomy(), new HashSet<String>(asList("T1.2", "T2")));
   }
-  
+
   @Test
   public void testSimpleCollapseWithFlatTaxonomy() {
-    baseTest(simpleTree(), collapsedSimpleTreeWithFlatTaxonomy(), flatTaxonomy(), new HashSet<String>(asList("G1", "G2")));
+    baseTest(
+      simpleTree(), collapsedSimpleTreeWithFlatTaxonomy(), flatTaxonomy(), new HashSet<String>(asList("G1", "G2"))
+    );
   }
 
   @Test

@@ -27,26 +27,24 @@ public class TreeCollapser {
   public MutableTreeNode collapseTree(TreeNode root, CollapsingStrategy collapsingStrategy) {
     MutableTreeNode mRoot = new MutableTreeNode(root);
 
-    
-    
-
     boolean changed = false;
 
     do {
-
       List<MutableTreeNode> leafNodes = getLeafNodes(mRoot);
       changed = false;
 
       for (MutableTreeNode leafNode : leafNodes) {
         MutableTreeNode parent = leafNode.getParent();
         if (parent != null) {
-          
-          List<MutableTreeNode> siblings =
-            parent.getChildren().stream().filter(node -> node.isLeaf() && node != leafNode).collect(Collectors.toList());
 
-          for (MutableTreeNode sibling: siblings) {
-            
-            if (collapsingStrategy.areCollapsible(leafNode, sibling)) { ////// ARE COLLAPSIBLE?
+          List<MutableTreeNode> siblings =
+            parent.getChildren().stream().filter(node -> node.isLeaf() && node != leafNode)
+              .collect(Collectors.toList());
+
+          for (MutableTreeNode sibling : siblings) {
+
+            if (collapsingStrategy.areCollapsible(leafNode, sibling)) { ////// ARE
+                                                                        ////// COLLAPSIBLE?
               // collapse
               MutableTreeNode collapsed = collapsingStrategy.collapseNodes(leafNode, sibling);
 
@@ -65,7 +63,6 @@ public class TreeCollapser {
                   grandParent.removeChild(parent);
                   grandParent.addChild(collapsed);
                 }
-
               }
 
               // we have done modifications, so restart
@@ -81,7 +78,7 @@ public class TreeCollapser {
     if (mRoot.getChildren().size() == 1) {
       return mRoot.getChildren().get(0);
     }
-    return mRoot;
 
+    return mRoot;
   }
 }
