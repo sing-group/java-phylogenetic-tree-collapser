@@ -2,6 +2,7 @@ package org.sing_group.treecollapse.core.newick;
 
 import java.util.LinkedList;
 import java.util.List;
+import static org.sing_group.treecollapse.core.BranchLengthAveragingTaxonomyCollapsingStrategy.BRANCH_LENGTH;
 
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 
@@ -37,7 +38,7 @@ public class NewickTreeParser {
       String[] split = splitNewickNodeName(newick);
       MutableTreeNode toret = new MutableTreeNode(split[0]);
       if (!split[1].isEmpty()) {
-        toret.setAttribute(NewickTree.BRANCH_LENGTH, split[1]);
+        toret.setAttribute(BRANCH_LENGTH, new Double(split[1]));
       }
       return toret;
     }
@@ -54,4 +55,5 @@ public class NewickTreeParser {
     }
     return toret;
   }
+  
 }

@@ -16,12 +16,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.sing_group.treecollapse.core.newick.NewickTree;
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 import org.sing_group.treecollapse.core.tree.TreeNode;
 
 public class TaxonomyCollapseTreeTest {
 
-  private TreeNode taxonomy() {
+  TreeNode taxonomy() {
     return root("root").withChildren(
       asList(
         node("T1").withChildren(
@@ -232,7 +233,7 @@ public class TaxonomyCollapseTreeTest {
 
   }
 
-  private Map<String, String> getSequenceToSpecieMapping(TreeNode root) {
+  Map<String, String> getSequenceToSpecieMapping(TreeNode root) {
     Map<String, String> sequenceToSpecieMapping = new HashMap<String, String>();
 
     for (String leafNodeName : getTreeLeafNodeNames(root)) {
@@ -253,5 +254,4 @@ public class TaxonomyCollapseTreeTest {
       return leafNodeNames;
     }
   }
-
 }

@@ -3,6 +3,7 @@ package org.sing_group.treecollapse.core;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
@@ -43,25 +44,27 @@ public class TreeCollapser {
 
           for (MutableTreeNode sibling : siblings) {
 
-            if (collapsingStrategy.areCollapsible(leafNode, sibling)) { ////// ARE
-                                                                        ////// COLLAPSIBLE?
-              // collapse
-              MutableTreeNode collapsed = collapsingStrategy.collapseNodes(leafNode, sibling);
+            if (collapsingStrategy.areMergeable(leafNode, sibling)) { ////// ARE
+                                                                        ////// MERGEABLE?
+              // merge
+              MutableTreeNode merged = collapsingStrategy.mergeNodes(leafNode, sibling);
 
-              // remove collapsed nodes
+              // remove merged nodes
               Arrays.asList(leafNode, sibling).forEach(node -> {
                 parent.removeChild(node);
               });
 
-              parent.addChild(collapsed);
+              parent.addChild(merged);
 
               if (parent.getChildren().size() == 1) {
                 // grand parent
                 MutableTreeNode grandParent = parent.getParent();
 
                 if (grandParent != null) {
+                  MutableTreeNode collapsed = collapsingStrategy.collapse(parent, merged);
                   grandParent.removeChild(parent);
                   grandParent.addChild(collapsed);
+
                 }
               }
 

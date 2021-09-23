@@ -22,6 +22,13 @@ public class MutableTreeNode implements TreeNode {
       mChild.parent = this;
 
     });
+    
+    if (original instanceof MutableTreeNode) {
+      MutableTreeNode mtnOriginal = (MutableTreeNode) original;
+      for (Map.Entry<String, Object> entry: mtnOriginal.getAttributes().entrySet()) {
+        this.setAttribute(entry.getKey(), entry.getValue());
+      }
+    }
   }
 
   public MutableTreeNode(String name) {

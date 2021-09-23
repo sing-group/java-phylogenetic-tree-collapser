@@ -16,10 +16,10 @@ import org.sing_group.treecollapse.core.tree.TreeNode;
 
 public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
 
-  private static final String TAXONOMY_TERM = "TAXONOMY";
-  private static final String SPECIES = "SPECIES";
-  private static final String IS_COLLAPSED = "IS_COLLAPSED";
-  private static final String COLLAPSED_NODES = "COLLAPSED_NODES";
+  protected static final String TAXONOMY_TERM = "TAXONOMY";
+  protected static final String SPECIES = "SPECIES";
+  protected static final String IS_COLLAPSED = "IS_COLLAPSED";
+  protected static final String COLLAPSED_NODES = "COLLAPSED_NODES";
   private Map<String, String> sequenceToSpecieMap;
   private TreeNode speciesTaxonomy;
   private Set<String> collapsingTaxonomyStopTerms;
@@ -35,11 +35,11 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
     this.collapsingTaxonomyStopTerms = collapsingTaxonomyStopTerms;
   }
   
-  private boolean isCollapsed(MutableTreeNode node) {
+  protected boolean isCollapsed(MutableTreeNode node) {
     return node.getAttributes().containsKey(IS_COLLAPSED) && (boolean) node.getAttributes().get(IS_COLLAPSED);
   }
 
-  private List<MutableTreeNode> getCollapsedNodes(MutableTreeNode node) {
+  protected List<MutableTreeNode> getCollapsedNodes(MutableTreeNode node) {
     return node.getAttribute(COLLAPSED_NODES);
   }
 
@@ -73,7 +73,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
 
 
   @Override
-  public MutableTreeNode collapseNodes(MutableTreeNode node1, MutableTreeNode node2) {
+  public MutableTreeNode mergeNodes(MutableTreeNode node1, MutableTreeNode node2) {
     MutableTreeNode newNode = new MutableTreeNode("");
     newNode.setAttribute(IS_COLLAPSED, true);
 
@@ -108,7 +108,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   }
 
   @Override
-  public boolean areCollapsible(MutableTreeNode node1, MutableTreeNode node2) {
+  public boolean areMergeable(MutableTreeNode node1, MutableTreeNode node2) {
     TreeNode commonAncestor = getCommonAncestorInTaxonomy(node1, node2);
     
     TreeNode node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
@@ -153,5 +153,10 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
     }
     return false;
 
+  }
+
+  @Override
+  public MutableTreeNode collapse(MutableTreeNode parent, MutableTreeNode child) {
+    return child;
   }
 }
