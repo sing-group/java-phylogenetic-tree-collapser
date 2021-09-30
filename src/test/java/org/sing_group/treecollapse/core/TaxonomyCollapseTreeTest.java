@@ -120,7 +120,6 @@ public class TaxonomyCollapseTreeTest {
         node("s6.1")
       )
     ).build();
-
   }
 
   private TreeNode collapsedSimpleTree2() {
@@ -149,14 +148,13 @@ public class TaxonomyCollapseTreeTest {
         )
       )
     ).build();
-
   }
 
   private TreeNode collapsedTwoSubtrees() {
     return root("T1_(4)").build();
   }
 
-  private TreeNode simpleTreeWithRepeatedSpecie() {
+  private TreeNode simpleTreeWithRepeatedSpecies() {
     return root("root").withChildren(
       asList(
         node().withChildren(
@@ -173,17 +171,15 @@ public class TaxonomyCollapseTreeTest {
         )
       )
     ).build();
-
   }
 
-  private TreeNode collapsedSimpleTreeWithRepeatedSpecie() {
+  private TreeNode collapsedSimpleTreeWithRepeatedSpecies() {
     return root("root").withChildren(
       asList(
         node("T1_(2)"),
         node("T1_(2)")
       )
     ).build();
-
   }
 
   @Test
@@ -219,10 +215,10 @@ public class TaxonomyCollapseTreeTest {
   }
 
   @Test
-  public void testSimpleWithRepeatedSpecie() {
+  public void testSimpleWithRepeatedSpecies() {
     baseTest(
-      simpleTreeWithRepeatedSpecie(), collapsedSimpleTreeWithRepeatedSpecie(), taxonomy(),
-      new HashSet<String>(asList("T1")), getSequenceToSpecieMapping(simpleTreeWithRepeatedSpecie())
+      simpleTreeWithRepeatedSpecies(), collapsedSimpleTreeWithRepeatedSpecies(), taxonomy(),
+      new HashSet<String>(asList("T1")), getSequenceToSpecieMapping(simpleTreeWithRepeatedSpecies())
     );
   }
 
