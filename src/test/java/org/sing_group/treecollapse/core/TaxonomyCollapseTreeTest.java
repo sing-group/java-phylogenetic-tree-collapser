@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.sing_group.treecollapse.core.exception.TaxonomyCollapsingException;
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 import org.sing_group.treecollapse.core.tree.TreeNode;
 
@@ -187,37 +188,48 @@ public class TaxonomyCollapseTreeTest {
 
   @Test
   public void testSimpleCollapse() {
-    baseTest(simpleTree(), collapsedSimpleTree(), taxonomy(), new HashSet<String>(asList("T1.2", "T2")));
+    baseTest(
+      simpleTree(), collapsedSimpleTree(), taxonomy(), new HashSet<String>(asList("T1.2", "T2")),
+      getSequenceToSpecieMapping(simpleTree())
+    );
   }
 
   @Test
   public void testSimpleCollapse2() {
-    baseTest(simpleTree2(), collapsedSimpleTree2(), taxonomy(), new HashSet<String>(asList("T1.2", "T2")));
+    baseTest(
+      simpleTree2(), collapsedSimpleTree2(), taxonomy(), new HashSet<String>(asList("T1.2", "T2")),
+      getSequenceToSpecieMapping(simpleTree2())
+    );
   }
 
   @Test
   public void testSimpleCollapseWithFlatTaxonomy() {
     baseTest(
-      simpleTree(), collapsedSimpleTreeWithFlatTaxonomy(), flatTaxonomy(), new HashSet<String>(asList("G1", "G2"))
+      simpleTree(), collapsedSimpleTreeWithFlatTaxonomy(), flatTaxonomy(), new HashSet<String>(asList("G1", "G2")),
+      getSequenceToSpecieMapping(simpleTree())
     );
   }
 
   @Test
   public void testTwoSubtrees() {
-    baseTest(twoSubtrees(), collapsedTwoSubtrees(), taxonomy(), new HashSet<String>(asList("T1")));
+    baseTest(
+      twoSubtrees(), collapsedTwoSubtrees(), taxonomy(), new HashSet<String>(asList("T1")),
+      getSequenceToSpecieMapping(twoSubtrees())
+    );
   }
 
   @Test
   public void testSimpleWithRepeatedSpecie() {
     baseTest(
       simpleTreeWithRepeatedSpecie(), collapsedSimpleTreeWithRepeatedSpecie(), taxonomy(),
-      new HashSet<String>(asList("T1"))
+      new HashSet<String>(asList("T1")), getSequenceToSpecieMapping(simpleTreeWithRepeatedSpecie())
     );
   }
 
-  private void baseTest(TreeNode tree, TreeNode expectedCollapsed, TreeNode taxonomy, Set<String> taxonomyStopTerms) {
-    Map<String, String> sequenceToSpecieMapping = getSequenceToSpecieMapping(tree);
-
+  private void baseTest(
+    TreeNode tree, TreeNode expectedCollapsed, TreeNode taxonomy, Set<String> taxonomyStopTerms,
+    Map<String, String> sequenceToSpecieMapping
+  ) {
     System.out.println("BEFORE");
     tree.dumpTree(System.out);
     MutableTreeNode collapsed =
@@ -229,7 +241,17 @@ public class TaxonomyCollapseTreeTest {
     collapsed.dumpTree(System.out);
 
     assertThat(collapsed, is(equalTo(expectedCollapsed)));
+  }
 
+  @Test(expected = TaxonomyCollapsingException.class)
+  public void testSequenceWithoutMapping() {
+    Map<String, String> sequenceToSpecieMapping = getSequenceToSpecieMapping(simpleTree());
+    sequenceToSpecieMapping.remove("s2.1");
+
+    baseTest(
+      simpleTree(), collapsedSimpleTree(), taxonomy(), new HashSet<String>(asList("T1.2", "T2")),
+      sequenceToSpecieMapping
+    );
   }
 
   public static Map<String, String> getSequenceToSpecieMapping(TreeNode root) {

@@ -4,6 +4,7 @@ import static java.nio.file.Files.readAllLines;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 import org.sing_group.treecollapse.core.tree.TreeManager;
@@ -29,14 +30,14 @@ public class TaxonomyFileReader {
     String[] lineSplit = line.split(TERM_DELIMITER);
     for (int i = lineSplit.length - 1; i >= 0; i--) {
       String currentTerm = lineSplit[i];
-      TreeNode currentTermNode = treeManager.getNodeByName(currentTerm);
+      Optional<TreeNode> currentTermNode = treeManager.getNodeByName(currentTerm);
 
-      if (currentTermNode == null) {
+      if (!currentTermNode.isPresent()) {
         MutableTreeNode newNode = new MutableTreeNode(currentTerm);
         parent.addChild(newNode);
         parent = newNode;
       } else {
-        parent = (MutableTreeNode) currentTermNode;
+        parent = (MutableTreeNode) currentTermNode.get();
       }
 
       treeManager = new TreeManager(parent);

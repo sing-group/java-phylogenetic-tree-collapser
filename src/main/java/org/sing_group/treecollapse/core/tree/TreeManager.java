@@ -2,6 +2,7 @@ package org.sing_group.treecollapse.core.tree;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class TreeManager {
@@ -12,21 +13,21 @@ public class TreeManager {
     this.tree = tree;
   }
 
-  public TreeNode getNodeByName(String name) {
+  public Optional<TreeNode> getNodeByName(String name) {
     return findInTree(this.tree, (node) -> node.getName().contentEquals(name));
   }
 
-  private TreeNode findInTree(TreeNode root, Predicate<TreeNode> isElement) {
+  private Optional<TreeNode> findInTree(TreeNode root, Predicate<TreeNode> isElement) {
     if (isElement.test(root)) {
-      return root;
+      return Optional.of(root);
     } else {
       for (TreeNode child : root.getChildren()) {
-        TreeNode node = findInTree(child, isElement);
-        if (node != null) {
+        Optional<TreeNode> node = findInTree(child, isElement);
+        if (node.isPresent()) {
           return node;
         }
       }
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -38,7 +39,7 @@ public class TreeManager {
   public TreeNode getCommonAncestor(TreeNode node1, TreeNode node2) {
     List<TreeNode> node1Path = getTreePath(node1);
     List<TreeNode> node2Path = getTreePath(node2);
-    
+
     int i = 0;
 
     TreeNode commonAncestor = null;

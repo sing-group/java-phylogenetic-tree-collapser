@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.sing_group.treecollapse.core.exception.TaxonomyCollapsingException;
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 import org.sing_group.treecollapse.core.tree.TreeManager;
 import org.sing_group.treecollapse.core.tree.TreeNode;
@@ -45,29 +47,45 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
 
   private String getTaxonomyTerm(MutableTreeNode node) {
     if (node.getAttributes().get(TAXONOMY_TERM) == null) {
-      node.setAttribute(
-        TAXONOMY_TERM, taxonomyTreeManager.getParent(taxonomyTreeManager.getNodeByName(getSpecie(node))).getName()
-      );
+      Optional<TreeNode> speciesNode = taxonomyTreeManager.getNodeByName(getSpecies(node));
+      if (speciesNode.isPresent()) {
+        node.setAttribute(
+          TAXONOMY_TERM, taxonomyTreeManager.getParent(speciesNode.get()).getName()
+        );
+      } else {
+        throw new TaxonomyCollapsingException(
+          "Species not found for the current node (" + node.getName()
+            + "). Make sure this node is listed in the sequence to species mapping."
+        );
+      }
     }
+
     return (String) node.getAttributes().get(TAXONOMY_TERM);
   }
 
-  private List<String> getSpecies(MutableTreeNode node) {
+  private List<String> getSpeciesList(MutableTreeNode node) {
     List<String> species = new LinkedList<>();
     if (isCollapsed(node)) {
 
       for (MutableTreeNode collapsedNode : getCollapsedNodes(node)) {
-        species.add(getSpecie(collapsedNode));
+        species.add(getSpecies(collapsedNode));
       }
     } else {
-      return Arrays.asList(getSpecie(node));
+      return Arrays.asList(getSpecies(node));
     }
     return species;
   }
 
-  private String getSpecie(MutableTreeNode node) {
+  private String getSpecies(MutableTreeNode node) {
     if (node.getAttributes().get(SPECIES) == null) {
-      node.setAttribute(SPECIES, this.sequenceToSpecieMap.get(node.getName()));
+      String species = this.sequenceToSpecieMap.get(node.getName());
+      node.setAttribute(SPECIES, species);
+      if (species == null) {
+        throw new TaxonomyCollapsingException(
+          "Species not found for the node \"" + node.getName()
+            + "\". Make sure this node is listed in the sequence to species mapping."
+        );
+      }
     }
     return (String) node.getAttributes().get(SPECIES);
   }
@@ -99,22 +117,35 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   }
 
   private TreeNode getCommonAncestorInTaxonomy(MutableTreeNode node1, MutableTreeNode node2) {
-    TreeNode node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
-    TreeNode node2TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node2));
+    Optional<TreeNode> node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
+    if (!node1TaxonomyTreeNode.isPresent()) {
+      throw new TaxonomyCollapsingException("Taxonomy term not found for node: " + node1.getName());
+    }
 
-    TreeNode commonAncestor = taxonomyTreeManager.getCommonAncestor(node1TaxonomyTreeNode, node2TaxonomyTreeNode);
-    return commonAncestor;
+    Optional<TreeNode> node2TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node2));
+    if (!node2TaxonomyTreeNode.isPresent()) {
+      throw new TaxonomyCollapsingException("Taxonomy term not found for node: " + node2.getName());
+    }
+
+    return taxonomyTreeManager.getCommonAncestor(node1TaxonomyTreeNode.get(), node2TaxonomyTreeNode.get());
   }
 
   @Override
   public boolean areMergeable(MutableTreeNode node1, MutableTreeNode node2) {
     TreeNode commonAncestor = getCommonAncestorInTaxonomy(node1, node2);
 
-    TreeNode node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
-    TreeNode node2TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node2));
+    Optional<TreeNode> node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
+    if (!node1TaxonomyTreeNode.isPresent()) {
+      throw new TaxonomyCollapsingException("Taxonomy term not found for node: " + node1.getName());
+    }
 
-    List<TreeNode> node1TaxonomyTreePath = taxonomyTreeManager.getTreePath(node1TaxonomyTreeNode);
-    List<TreeNode> node2TaxonomyTreePath = taxonomyTreeManager.getTreePath(node2TaxonomyTreeNode);
+    Optional<TreeNode> node2TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node2));
+    if (!node2TaxonomyTreeNode.isPresent()) {
+      throw new TaxonomyCollapsingException("Taxonomy term not found for node: " + node2.getName());
+    }
+
+    List<TreeNode> node1TaxonomyTreePath = taxonomyTreeManager.getTreePath(node1TaxonomyTreeNode.get());
+    List<TreeNode> node2TaxonomyTreePath = taxonomyTreeManager.getTreePath(node2TaxonomyTreeNode.get());
 
     // remove from root to commonAncestor (included) in both treePaths
     while (node1TaxonomyTreePath.get(0) != commonAncestor) {
@@ -143,8 +174,8 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
 
     if (!foundTaxonomyStopTermInSubPaths) {
       // check if node1 and node2 have species in common
-      Set<String> node1species = new HashSet<>(getSpecies(node1));
-      Set<String> node2species = new HashSet<>(getSpecies(node2));
+      Set<String> node1species = new HashSet<>(getSpeciesList(node1));
+      Set<String> node2species = new HashSet<>(getSpeciesList(node2));
       node1species.retainAll(node2species);
       if (node1species.size() > 0) {
         return false;
