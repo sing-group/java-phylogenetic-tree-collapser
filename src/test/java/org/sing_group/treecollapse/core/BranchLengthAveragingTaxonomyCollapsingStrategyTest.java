@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.sing_group.treecollapse.core.exception.TaxonomyCollapsingException;
 import org.sing_group.treecollapse.core.newick.NewickTree;
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 
@@ -23,7 +23,6 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategyTest {
     );
   }
 
-  @Ignore
   @Test
   public void mergeTwoNodesAndCollapseTest() {
     testCollapse(
@@ -32,10 +31,16 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategyTest {
     );
   }
 
-  private void testCollapse(String newickTreeString, String expectedCollapsedNewickTreeString) {
-    String collapsedNewickTreeString = collapse(newickTreeString);
+  @Test(expected = TaxonomyCollapsingException.class)
+  public void mergeWithoutBranchLengths() {
+    testCollapse(
+      "(s1.1,(s2.1,s3.1),s4.1)root;",
+      "(s1.1:4.0,s4.1:2.0,T1.2_(2):5.5)root;"
+    );
+  }
 
-    Assert.assertEquals(expectedCollapsedNewickTreeString, collapsedNewickTreeString);
+  private void testCollapse(String newickTreeString, String expectedCollapsedNewickTreeString) {
+    Assert.assertEquals(expectedCollapsedNewickTreeString, collapse(newickTreeString));
   }
 
   private String collapse(String newickTreeString) {

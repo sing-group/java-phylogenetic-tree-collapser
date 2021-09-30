@@ -3,6 +3,7 @@ package org.sing_group.treecollapse.core;
 import java.util.Map;
 import java.util.Set;
 
+import org.sing_group.treecollapse.core.exception.TaxonomyCollapsingException;
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 import org.sing_group.treecollapse.core.tree.TreeNode;
 
@@ -21,9 +22,21 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategy extends TaxonomyCol
     MutableTreeNode merged = super.mergeNodes(node1, node2);
 
     // set the BRANCH_LENGTH as the average
+    if (node1.getAttribute(BRANCH_LENGTH) == null) {
+      throw new TaxonomyCollapsingException(
+        "Branch length not provided for node " + node1.getName()
+          + ". Branch length is required to collapse nodes and keep branch lengths."
+      );
+    }
     double node1Length = node1.getAttribute(BRANCH_LENGTH);
     int node1CollapsedNodes = super.isCollapsed(node1) ? super.getCollapsedNodes(node1).size() : 1;
 
+    if (node2.getAttribute(BRANCH_LENGTH) == null) {
+      throw new TaxonomyCollapsingException(
+        "Branch length not provided for node " + node2.getName()
+          + ". Branch length is required to collapse nodes and keep branch lengths."
+      );
+    }
     double node2Length = node2.getAttribute(BRANCH_LENGTH);
     int node2CollapsedNodes = super.isCollapsed(node2) ? super.getCollapsedNodes(node2).size() : 1;
 
@@ -33,7 +46,6 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategy extends TaxonomyCol
     merged.setAttribute(BRANCH_LENGTH, node1Weight * node1Length + node2Weight * node2Length);
 
     return merged;
-
   }
 
   @Override
