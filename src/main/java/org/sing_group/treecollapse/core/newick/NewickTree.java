@@ -3,15 +3,17 @@ package org.sing_group.treecollapse.core.newick;
 import static org.sing_group.treecollapse.core.BranchLengthAveragingTaxonomyCollapsingStrategy.BRANCH_LENGTH;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 
 public class NewickTree {
 
-
-  private static NumberFormat branchLengthFormat = new DecimalFormat("##.#############");
+  private static DecimalFormatSymbols SYMBOLS = new DecimalFormatSymbols(Locale.US);
+  private static NumberFormat BRANCH_LENGTH_FORMAT = new DecimalFormat("#0.0############", SYMBOLS);
   private MutableTreeNode root;
 
   public NewickTree(String newick) {
@@ -35,7 +37,7 @@ public class NewickTree {
     if (node.getChildren().size() == 0) {
       String length = "";
       if (node.getAttribute(BRANCH_LENGTH) != null) {
-        length = ":" + branchLengthFormat.format(node.getAttribute(BRANCH_LENGTH));
+        length = ":" + BRANCH_LENGTH_FORMAT.format(node.getAttribute(BRANCH_LENGTH));
       }
       return node.getName() + length;
     }
@@ -51,7 +53,7 @@ public class NewickTree {
       sb.append(node.getName());
     }
     if (node.getAttribute(BRANCH_LENGTH) != null) {      
-      sb.append(":").append(branchLengthFormat.format(node.getAttribute(BRANCH_LENGTH)));
+      sb.append(":").append(BRANCH_LENGTH_FORMAT.format(node.getAttribute(BRANCH_LENGTH)));
     }
 
     return sb.toString();
