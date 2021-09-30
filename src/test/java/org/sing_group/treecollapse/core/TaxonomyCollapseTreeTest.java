@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.sing_group.treecollapse.core.newick.NewickTree;
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 import org.sing_group.treecollapse.core.tree.TreeNode;
 
@@ -93,7 +92,7 @@ public class TaxonomyCollapseTreeTest {
       asList(
         node("s1.1"),
         node("s4.1"),
-        node("T1.2 (2)")
+        node("T1.2_(2)")
       )
     ).build();
   }
@@ -102,7 +101,7 @@ public class TaxonomyCollapseTreeTest {
     return root("root").withChildren(
       asList(
         node("s1.1"),
-        node("G2 (3)")
+        node("G2_(3)")
       )
     ).build();
   }
@@ -126,8 +125,8 @@ public class TaxonomyCollapseTreeTest {
   private TreeNode collapsedSimpleTree2() {
     return root("root").withChildren(
       asList(
-        node("T1.1 (2)"),
-        node("T1.2 (2)")
+        node("T1.1_(2)"),
+        node("T1.2_(2)")
       )
     ).build();
   }
@@ -153,7 +152,7 @@ public class TaxonomyCollapseTreeTest {
   }
 
   private TreeNode collapsedTwoSubtrees() {
-    return root("T1 (4)").build();
+    return root("T1_(4)").build();
   }
 
   private TreeNode simpleTreeWithRepeatedSpecie() {
@@ -179,8 +178,8 @@ public class TaxonomyCollapseTreeTest {
   private TreeNode collapsedSimpleTreeWithRepeatedSpecie() {
     return root("root").withChildren(
       asList(
-        node("T1 (2)"),
-        node("T1 (2)")
+        node("T1_(2)"),
+        node("T1_(2)")
       )
     ).build();
 

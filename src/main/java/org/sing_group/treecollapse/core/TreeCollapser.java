@@ -3,7 +3,6 @@ package org.sing_group.treecollapse.core;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
