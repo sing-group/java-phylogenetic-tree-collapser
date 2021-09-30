@@ -23,7 +23,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   private Map<String, String> sequenceToSpecieMap;
   private TreeNode speciesTaxonomy;
   private Set<String> collapsingTaxonomyStopTerms;
-  
+
   private TreeManager taxonomyTreeManager;
 
   public TaxonomyCollapsingStrategy(
@@ -34,7 +34,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
     this.sequenceToSpecieMap = sequenceToSpecieMap;
     this.collapsingTaxonomyStopTerms = collapsingTaxonomyStopTerms;
   }
-  
+
   protected boolean isCollapsed(MutableTreeNode node) {
     return node.getAttributes().containsKey(IS_COLLAPSED) && (boolean) node.getAttributes().get(IS_COLLAPSED);
   }
@@ -45,7 +45,9 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
 
   private String getTaxonomyTerm(MutableTreeNode node) {
     if (node.getAttributes().get(TAXONOMY_TERM) == null) {
-      node.setAttribute(TAXONOMY_TERM, taxonomyTreeManager.getParent(taxonomyTreeManager.getNodeByName(getSpecie(node))).getName());
+      node.setAttribute(
+        TAXONOMY_TERM, taxonomyTreeManager.getParent(taxonomyTreeManager.getNodeByName(getSpecie(node))).getName()
+      );
     }
     return (String) node.getAttributes().get(TAXONOMY_TERM);
   }
@@ -70,16 +72,13 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
     return (String) node.getAttributes().get(SPECIES);
   }
 
-
-
   @Override
   public MutableTreeNode mergeNodes(MutableTreeNode node1, MutableTreeNode node2) {
     MutableTreeNode newNode = new MutableTreeNode("");
     newNode.setAttribute(IS_COLLAPSED, true);
 
     TreeNode commonAncestor = getCommonAncestorInTaxonomy(node1, node2);
-    
-    
+
     newNode.setAttribute(TAXONOMY_TERM, commonAncestor.getName());
 
     LinkedList<MutableTreeNode> collapsedNodes = new LinkedList<>();
@@ -102,7 +101,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   private TreeNode getCommonAncestorInTaxonomy(MutableTreeNode node1, MutableTreeNode node2) {
     TreeNode node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
     TreeNode node2TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node2));
-    
+
     TreeNode commonAncestor = taxonomyTreeManager.getCommonAncestor(node1TaxonomyTreeNode, node2TaxonomyTreeNode);
     return commonAncestor;
   }
@@ -110,36 +109,39 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   @Override
   public boolean areMergeable(MutableTreeNode node1, MutableTreeNode node2) {
     TreeNode commonAncestor = getCommonAncestorInTaxonomy(node1, node2);
-    
+
     TreeNode node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
     TreeNode node2TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node2));
-    
+
     List<TreeNode> node1TaxonomyTreePath = taxonomyTreeManager.getTreePath(node1TaxonomyTreeNode);
     List<TreeNode> node2TaxonomyTreePath = taxonomyTreeManager.getTreePath(node2TaxonomyTreeNode);
-    
-    //remove from root to commonAncestor (included) in both treePaths
-    while(node1TaxonomyTreePath.get(0) != commonAncestor) {
+
+    // remove from root to commonAncestor (included) in both treePaths
+    while (node1TaxonomyTreePath.get(0) != commonAncestor) {
       node1TaxonomyTreePath = node1TaxonomyTreePath.subList(1, node1TaxonomyTreePath.size());
       node2TaxonomyTreePath = node2TaxonomyTreePath.subList(1, node2TaxonomyTreePath.size());
     }
-    
-    //also remove the commonAncestor node from both paths
+
+    // also remove the commonAncestor node from both paths
     node1TaxonomyTreePath = node1TaxonomyTreePath.subList(1, node1TaxonomyTreePath.size());
     node2TaxonomyTreePath = node2TaxonomyTreePath.subList(1, node2TaxonomyTreePath.size());
-    
-    List<String> node1TaxonomyTreePathNames = node1TaxonomyTreePath.stream().map(node -> node.getName()).collect(Collectors.toList());
-    List<String> node2TaxonomyTreePathNames = node2TaxonomyTreePath.stream().map(node -> node.getName()).collect(Collectors.toList());
-    
+
+    List<String> node1TaxonomyTreePathNames =
+      node1TaxonomyTreePath.stream().map(node -> node.getName()).collect(Collectors.toList());
+    List<String> node2TaxonomyTreePathNames =
+      node2TaxonomyTreePath.stream().map(node -> node.getName()).collect(Collectors.toList());
+
     boolean foundTaxonomyStopTermInSubPaths = false;
     for (String taxonomyStopTerm : this.collapsingTaxonomyStopTerms) {
-      if (node1TaxonomyTreePathNames.contains(taxonomyStopTerm) || node2TaxonomyTreePathNames.contains(taxonomyStopTerm)) {
+      if (
+        node1TaxonomyTreePathNames.contains(taxonomyStopTerm) || node2TaxonomyTreePathNames.contains(taxonomyStopTerm)
+      ) {
         foundTaxonomyStopTermInSubPaths = true;
         break;
       }
     }
-    
-    if (!foundTaxonomyStopTermInSubPaths) {
 
+    if (!foundTaxonomyStopTermInSubPaths) {
       // check if node1 and node2 have species in common
       Set<String> node1species = new HashSet<>(getSpecies(node1));
       Set<String> node2species = new HashSet<>(getSpecies(node2));
@@ -151,8 +153,8 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
       }
 
     }
-    return false;
 
+    return false;
   }
 
   @Override

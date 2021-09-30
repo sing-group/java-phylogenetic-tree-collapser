@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.sing_group.treecollapse.core.tree.MutableTreeNode;
+import org.sing_group.treecollapse.core.tree.TreeNode;
 
 public class NewickTree {
 
@@ -18,6 +19,10 @@ public class NewickTree {
 
   public NewickTree(String newick) {
     this(NewickTreeParser.parse(newick));
+  }
+
+  public NewickTree(TreeNode root) {
+    this(new MutableTreeNode(root));
   }
 
   public NewickTree(MutableTreeNode root) {
@@ -33,29 +38,32 @@ public class NewickTree {
     return toString(root) + ";";
   }
 
-  private static String toString(MutableTreeNode node) {
+  protected String toString(MutableTreeNode node) {
     if (node.getChildren().size() == 0) {
-      String length = "";
-      if (node.getAttribute(BRANCH_LENGTH) != null) {
-        length = ":" + BRANCH_LENGTH_FORMAT.format(node.getAttribute(BRANCH_LENGTH));
-      }
-      return node.getName() + length;
+      return formatNode(node);
     }
 
     StringBuilder sb = new StringBuilder("(");
     sb.append(
       node.getChildren().stream()
-        .map(NewickTree::toString)
+        .map(this::toString)
         .collect(Collectors.joining(","))
     ).append(")");
 
+    sb.append(formatNode(node));
+
+    return sb.toString();
+  }
+
+  protected String formatNode(MutableTreeNode node) {
+    StringBuilder sb = new StringBuilder();
     if (node.getName() != null && !node.getName().isEmpty()) {
       sb.append(node.getName());
     }
-    if (node.getAttribute(BRANCH_LENGTH) != null) {      
+
+    if (node.getAttribute(BRANCH_LENGTH) != null) {
       sb.append(":").append(BRANCH_LENGTH_FORMAT.format(node.getAttribute(BRANCH_LENGTH)));
     }
-
     return sb.toString();
   }
 }

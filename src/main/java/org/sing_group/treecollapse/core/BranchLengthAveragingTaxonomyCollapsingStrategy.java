@@ -46,5 +46,4 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategy extends TaxonomyCol
 
     return collapsed;
   }
-
 }

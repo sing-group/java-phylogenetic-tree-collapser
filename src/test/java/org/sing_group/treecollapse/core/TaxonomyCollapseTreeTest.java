@@ -21,7 +21,7 @@ import org.sing_group.treecollapse.core.tree.TreeNode;
 
 public class TaxonomyCollapseTreeTest {
 
-  TreeNode taxonomy() {
+  public static TreeNode taxonomy() {
     return root("root").withChildren(
       asList(
         node("T1").withChildren(
@@ -51,7 +51,7 @@ public class TaxonomyCollapseTreeTest {
     ).build();
   }
 
-  private TreeNode flatTaxonomy() {
+  public static TreeNode flatTaxonomy() {
     return root("root").withChildren(
       asList(
         node("G1").withChildren(
@@ -232,7 +232,7 @@ public class TaxonomyCollapseTreeTest {
 
   }
 
-  Map<String, String> getSequenceToSpecieMapping(TreeNode root) {
+  public static Map<String, String> getSequenceToSpecieMapping(TreeNode root) {
     Map<String, String> sequenceToSpecieMapping = new HashMap<String, String>();
 
     for (String leafNodeName : getTreeLeafNodeNames(root)) {
@@ -241,7 +241,7 @@ public class TaxonomyCollapseTreeTest {
     return sequenceToSpecieMapping;
   }
 
-  private List<String> getTreeLeafNodeNames(TreeNode root) {
+  private static List<String> getTreeLeafNodeNames(TreeNode root) {
     List<String> leafNodeNames = new LinkedList<>();
 
     if (root.isLeaf()) {
