@@ -4,6 +4,8 @@ import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
+import static org.sing_group.treecollapse.core.TaxonomyCollapsingStrategy.COLLAPSED_NODES;
+import static org.sing_group.treecollapse.core.TaxonomyCollapsingStrategy.IS_COLLAPSED;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import org.sing_group.treecollapse.core.TreeCollapser;
 import org.sing_group.treecollapse.core.newick.NewickCladogramTree;
 import org.sing_group.treecollapse.core.newick.NewickTree;
 import org.sing_group.treecollapse.core.taxonomy.TaxonomyFileReader;
+import org.sing_group.treecollapse.core.tree.MutableTreeNode;
 import org.sing_group.treecollapse.core.tree.TreeNode;
 
 import es.uvigo.ei.sing.yacli.command.AbstractCommand;
@@ -26,6 +29,10 @@ import es.uvigo.ei.sing.yacli.command.option.StringOption;
 import es.uvigo.ei.sing.yacli.command.parameter.Parameters;
 
 public class CollapseTreeCommand extends AbstractCommand {
+
+  private static final String OUTPUT_COLLAPSED_NODES_DESCRIPTION = "output collapsed nodes file";
+  private static final String OUTPUT_COLLAPSED_NODES_SHORT_NAME = "ocn";
+  private static final String OUTPUT_COLLAPSED_NODES_NAME = "output-collapsed-nodes";
 
   private static final String OUTPUT_DESCRIPTION = "output Newick file";
   private static final String OUTPUT_SHORT_NAME = "o";
@@ -74,10 +81,14 @@ public class CollapseTreeCommand extends AbstractCommand {
     String input = parameters.getSingleValueString(getOption(INPUT_NAME));
     NewickTree tree = new NewickTree(readAllLines(new File(input).toPath()).get(0));
 
-    writeOutput(
-      parameters,
-      new NewickTree(new TreeCollapser().collapseTree(tree.getRoot(), getStrategy(parameters)))
-    );
+    MutableTreeNode collapsedTree = new TreeCollapser().collapseTree(tree.getRoot(), getStrategy(parameters));
+
+    writeOutput(parameters, new NewickTree(collapsedTree));
+
+    if (parameters.hasOption(getOption(OUTPUT_COLLAPSED_NODES_NAME))) {
+      String outputCollapsedNodes = parameters.getSingleValueString(getOption(OUTPUT_COLLAPSED_NODES_NAME));
+      writeCollapsedNodes(outputCollapsedNodes, collapsedTree);
+    }
   }
 
   private TaxonomyCollapsingStrategy getStrategy(Parameters parameters) throws IOException {
@@ -111,6 +122,35 @@ public class CollapseTreeCommand extends AbstractCommand {
     write(new File(output).toPath(), collapsedString.getBytes());
   }
 
+  private void writeCollapsedNodes(String outputCollapsedNodes, MutableTreeNode collapsedTree) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    writeCollapsedNodes(collapsedTree, sb);
+    write(new File(outputCollapsedNodes).toPath(), sb.toString().getBytes());
+  }
+
+  private void writeCollapsedNodes(MutableTreeNode node, StringBuilder sb) {
+    if (isCollapsed(node)) {
+      if (node.getAttributes().containsKey(COLLAPSED_NODES)) {
+        List<MutableTreeNode> collapsedNodes = node.getAttribute(COLLAPSED_NODES);
+        for (MutableTreeNode n : collapsedNodes) {
+          sb
+            .append(node.getName())
+            .append("\t")
+            .append(n.getName())
+            .append("\n");
+        }
+      }
+    } else {
+      for (MutableTreeNode child : node.getChildren()) {
+        writeCollapsedNodes(child, sb);
+      }
+    }
+  }
+
+  private static boolean isCollapsed(MutableTreeNode node) {
+    return node.getAttributes().containsKey(IS_COLLAPSED) && (boolean) node.getAttributes().get(IS_COLLAPSED);
+  }
+
   @Override
   protected List<Option<?>> createOptions() {
     return asList(
@@ -119,7 +159,8 @@ public class CollapseTreeCommand extends AbstractCommand {
       getTaxonomyPath(),
       getTaxonomyStopTermsPath(),
       getOutputType(),
-      getOutputPath()
+      getOutputPath(),
+      getOutputCollapsedNodesPath()
     );
   }
 
@@ -151,5 +192,11 @@ public class CollapseTreeCommand extends AbstractCommand {
 
   private Option<?> getOutputPath() {
     return new StringOption(OUTPUT_NAME, OUTPUT_SHORT_NAME, OUTPUT_DESCRIPTION, false, true);
+  }
+
+  private Option<?> getOutputCollapsedNodesPath() {
+    return new StringOption(
+      OUTPUT_COLLAPSED_NODES_NAME, OUTPUT_COLLAPSED_NODES_SHORT_NAME, OUTPUT_COLLAPSED_NODES_DESCRIPTION, true, true
+    );
   }
 }

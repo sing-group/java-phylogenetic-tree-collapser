@@ -17,11 +17,12 @@ import org.sing_group.treecollapse.core.tree.TreeManager;
 import org.sing_group.treecollapse.core.tree.TreeNode;
 
 public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
+  public static final String IS_COLLAPSED = "IS_COLLAPSED";
+  public static final String COLLAPSED_NODES = "COLLAPSED_NODES";
 
   protected static final String TAXONOMY_TERM = "TAXONOMY";
   protected static final String SPECIES = "SPECIES";
-  protected static final String IS_COLLAPSED = "IS_COLLAPSED";
-  protected static final String COLLAPSED_NODES = "COLLAPSED_NODES";
+
   private Map<String, String> sequenceToSpecieMap;
   private TreeNode speciesTaxonomy;
   private Set<String> collapsingTaxonomyStopTerms;
