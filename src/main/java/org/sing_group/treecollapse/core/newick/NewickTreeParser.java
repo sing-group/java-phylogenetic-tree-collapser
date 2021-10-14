@@ -56,5 +56,4 @@ public class NewickTreeParser {
     }
     return toret;
   }
-  
 }
