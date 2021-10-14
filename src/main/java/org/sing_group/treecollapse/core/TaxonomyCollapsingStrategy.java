@@ -113,7 +113,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
 
     newNode.setAttribute(COLLAPSED_NODES, collapsedNodes);
 
-    newNode.setName(getTaxonomyTerm(newNode) + "_(" + getCollapsedNodes(newNode).size() + ")");
+    newNode.setName(getTaxonomyTerm(newNode) + "_" + getCollapsedNodes(newNode).size());
     return newNode;
   }
 

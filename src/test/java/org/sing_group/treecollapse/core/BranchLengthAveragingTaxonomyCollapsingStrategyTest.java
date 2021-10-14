@@ -19,7 +19,7 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategyTest {
   public void mergeTwoNodesTest() {
     testCollapse(
       "(s1.1:4.0,(s2.1:2.0,s3.1:1.0,s5.1:1.0):4.0,s4.1:2.0)root;",
-      "(s1.1:4.0,(s5.1:1.0,T1.2_(2):1.5):4.0,s4.1:2.0)root;"
+      "(s1.1:4.0,(s5.1:1.0,T1.2_2:1.5):4.0,s4.1:2.0)root;"
     );
   }
 
@@ -27,7 +27,7 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategyTest {
   public void mergeTwoNodesAndCollapseTest() {
     testCollapse(
       "(s1.1:4.0,(s2.1:2.0,s3.1:1.0):4.0,s4.1:2.0)root;",
-      "(s1.1:4.0,s4.1:2.0,T1.2_(2):5.5)root;"
+      "(s1.1:4.0,s4.1:2.0,T1.2_2:5.5)root;"
     );
   }
 
@@ -35,7 +35,7 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategyTest {
   public void mergeWithoutBranchLengths() {
     testCollapse(
       "(s1.1,(s2.1,s3.1),s4.1)root;",
-      "(s1.1:4.0,s4.1:2.0,T1.2_(2):5.5)root;"
+      "(s1.1:4.0,s4.1:2.0,T1.2_2:5.5)root;"
     );
   }
 
