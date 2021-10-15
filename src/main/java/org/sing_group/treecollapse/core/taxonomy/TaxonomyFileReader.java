@@ -29,7 +29,7 @@ public class TaxonomyFileReader {
 
     String[] lineSplit = line.split(TERM_DELIMITER);
     for (int i = lineSplit.length - 1; i >= 0; i--) {
-      String currentTerm = lineSplit[i];
+      String currentTerm = lineSplit[i].trim();
       Optional<TreeNode> currentTermNode = treeManager.getNodeByName(currentTerm);
 
       if (!currentTermNode.isPresent()) {
