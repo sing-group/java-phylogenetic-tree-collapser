@@ -11,6 +11,7 @@ public class NewickTreeParser {
   public static MutableTreeNode parse(String newick) {
     newick = newick.replace(";", "");
     newick = newick.replace(" ", "");
+    newick = newick.replace("\n", "");
 
     if (newick.startsWith("(")) {
       List<MutableTreeNode> children = new LinkedList<>();
