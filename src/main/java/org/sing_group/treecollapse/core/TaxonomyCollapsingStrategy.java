@@ -3,6 +3,7 @@ package org.sing_group.treecollapse.core;
 import static java.util.Arrays.asList;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.sing_group.treecollapse.core.tree.TreeManager;
 import org.sing_group.treecollapse.core.tree.TreeNode;
 
 public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
+  private static final String TO_BE_RENAMED = "_TO_BE_NAMED_AT_END_";
   public static final String IS_COLLAPSED = "IS_COLLAPSED";
   public static final String COLLAPSED_NODES = "COLLAPSED_NODES";
 
@@ -112,8 +114,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
     });
 
     newNode.setAttribute(COLLAPSED_NODES, collapsedNodes);
-
-    newNode.setName(getTaxonomyTerm(newNode) + "_" + getCollapsedNodes(newNode).size());
+    newNode.setName(TO_BE_RENAMED);
     return newNode;
   }
 
@@ -193,4 +194,35 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   public MutableTreeNode collapse(MutableTreeNode parent, MutableTreeNode child) {
     return child;
   }
+
+  @Override
+  public void afterCollapse(MutableTreeNode root) {
+
+    if (root.getName().contentEquals(TO_BE_RENAMED)) {
+      root.setName(
+        root.getAttribute(TAXONOMY_TERM) + "_" + termIdGenerator.getNewId(root.getAttribute(TAXONOMY_TERM)) + "_" + getCollapsedNodes(root).size()
+      );
+    }
+    for (MutableTreeNode child : root.getChildren()) {
+      afterCollapse(child);
+    }
+
+  }
+
+  private class AutoIncrementTermIdGenerator {
+    private Map<String, Integer> counterByTerm = new HashMap<>();
+
+    public int getNewId(String term) {
+      Integer current = counterByTerm.get(term);
+      if (current == null) {
+        current = 0;
+      }
+      current++;
+      counterByTerm.put(term, current);
+      return current;
+    }
+  }
+
+  private AutoIncrementTermIdGenerator termIdGenerator = new AutoIncrementTermIdGenerator();
+
 }

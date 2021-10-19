@@ -26,7 +26,9 @@ public class TreeCollapser {
 
   public MutableTreeNode collapseTree(TreeNode root, CollapsingStrategy collapsingStrategy) {
     MutableTreeNode mRoot = new MutableTreeNode(root);
-
+    
+    collapsingStrategy.beforeCollapse(mRoot);
+    
     boolean changed = false;
 
     do {
@@ -78,9 +80,11 @@ public class TreeCollapser {
 
     // check if root contains only one child
     if (mRoot.getChildren().size() == 1) {
-      return mRoot.getChildren().get(0);
+      mRoot = mRoot.getChildren().get(0);
     }
 
+    collapsingStrategy.afterCollapse(mRoot);
+    
     return mRoot;
   }
 }

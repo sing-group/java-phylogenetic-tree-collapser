@@ -93,7 +93,7 @@ public class TaxonomyCollapseTreeTest {
       asList(
         node("s1.1"),
         node("s4.1"),
-        node("T1.2_2")
+        node("T1.2_1_2")
       )
     ).build();
   }
@@ -102,7 +102,7 @@ public class TaxonomyCollapseTreeTest {
     return root("root").withChildren(
       asList(
         node("s1.1"),
-        node("G2_3")
+        node("G2_1_3")
       )
     ).build();
   }
@@ -125,8 +125,8 @@ public class TaxonomyCollapseTreeTest {
   private TreeNode collapsedSimpleTree2() {
     return root("root").withChildren(
       asList(
-        node("T1.1_2"),
-        node("T1.2_2")
+        node("T1.1_1_2"),
+        node("T1.2_1_2")
       )
     ).build();
   }
@@ -151,7 +151,7 @@ public class TaxonomyCollapseTreeTest {
   }
 
   private TreeNode collapsedTwoSubtrees() {
-    return root("T1_4").build();
+    return root("T1_1_4").build();
   }
 
   private TreeNode simpleTreeWithRepeatedSpecies() {
@@ -176,8 +176,8 @@ public class TaxonomyCollapseTreeTest {
   private TreeNode collapsedSimpleTreeWithRepeatedSpecies() {
     return root("root").withChildren(
       asList(
-        node("T1_2"),
-        node("T1_2")
+        node("T1_1_2"),
+        node("T1_2_2")
       )
     ).build();
   }
