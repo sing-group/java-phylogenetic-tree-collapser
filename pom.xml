@@ -5,7 +5,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.sing_group</groupId>
 	<artifactId>treecollapse</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
+	<inceptionYear>2021</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +27,42 @@
 
 		<junit.version>4.12</junit.version>
 		<yacli.version>2.1.0-SNAPSHOT</yacli.version>
+
+		<license-maven-plugin.version>1.14</license-maven-plugin.version>
+
+		<!-- license-maven-plugin configuration -->
+		<license.licenseName>apache_v2</license.licenseName>
+		<license.copyrightOwners>Daniel Glez-Peña, Hugo López-Fernández, Cristina Vieira, Jorge Vieira</license.copyrightOwners>
+		<license.organizationName>SING Group (University of Vigo)</license.organizationName>
+		<license.addJavaLicenseAfterPackage>false</license.addJavaLicenseAfterPackage>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>sing-maven-releases</id>
+			<name>SING Maven Releases</name>
+			<url>https://maven.sing-group.org/repository/maven-releases/</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>sing-maven-releases</id>
+			<name>SING Maven Snapshots</name>
+			<url>https://maven.sing-group.org/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>sing-repository</id>
+			<name>SING repository</name>
+			<url>https://maven.sing-group.org/repository/maven/</url>
+		</repository>
+		<repository>
+			<id>sing-repository-snapshots</id>
+			<name>SING repository snapshots</name>
+			<url>https://maven.sing-group.org/repository/maven-snapshots/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -59,6 +103,20 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}</outputDirectory>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>${license-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
 					</execution>
 				</executions>
 			</plugin>
