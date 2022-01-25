@@ -37,8 +37,8 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategy extends TaxonomyCol
   }
 
   @Override
-  public MutableTreeNode mergeNodes(MutableTreeNode node1, MutableTreeNode node2) {
-    MutableTreeNode merged = super.mergeNodes(node1, node2);
+  public MutableTreeNode collapseNodes(MutableTreeNode node1, MutableTreeNode node2) {
+    MutableTreeNode collapsed = super.collapseNodes(node1, node2);
 
     // set the BRANCH_LENGTH as the average
     if (node1.getAttribute(BRANCH_LENGTH) == null) {
@@ -62,15 +62,15 @@ public class BranchLengthAveragingTaxonomyCollapsingStrategy extends TaxonomyCol
     double node1Weight = (double) node1CollapsedNodes / (double) (node1CollapsedNodes + node2CollapsedNodes);
     double node2Weight = (double) node2CollapsedNodes / (double) (node1CollapsedNodes + node2CollapsedNodes);
 
-    merged.setAttribute(BRANCH_LENGTH, node1Weight * node1Length + node2Weight * node2Length);
+    collapsed.setAttribute(BRANCH_LENGTH, node1Weight * node1Length + node2Weight * node2Length);
 
-    return merged;
+    return collapsed;
   }
 
   @Override
-  public MutableTreeNode collapse(MutableTreeNode parent, MutableTreeNode child) {
+  public MutableTreeNode collapseUp(MutableTreeNode parent, MutableTreeNode child) {
 
-    MutableTreeNode collapsed = super.collapse(parent, child);
+    MutableTreeNode collapsed = super.collapseUp(parent, child);
     collapsed.setAttribute(
       BRANCH_LENGTH, (double) parent.getAttribute(BRANCH_LENGTH) + (double) child.getAttribute(BRANCH_LENGTH)
     );

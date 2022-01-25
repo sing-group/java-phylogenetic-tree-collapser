@@ -113,7 +113,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   }
 
   @Override
-  public MutableTreeNode mergeNodes(MutableTreeNode node1, MutableTreeNode node2) {
+  public MutableTreeNode collapseNodes(MutableTreeNode node1, MutableTreeNode node2) {
     MutableTreeNode newNode = new MutableTreeNode("");
     newNode.setAttribute(IS_COLLAPSED, true);
 
@@ -152,7 +152,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   }
 
   @Override
-  public boolean areMergeable(MutableTreeNode node1, MutableTreeNode node2) {
+  public boolean areCollapsible(MutableTreeNode node1, MutableTreeNode node2) {
     TreeNode commonAncestor = getCommonAncestorInTaxonomy(node1, node2);
 
     Optional<TreeNode> node1TaxonomyTreeNode = taxonomyTreeManager.getNodeByName(getTaxonomyTerm(node1));
@@ -210,7 +210,7 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   }
 
   @Override
-  public MutableTreeNode collapse(MutableTreeNode parent, MutableTreeNode child) {
+  public MutableTreeNode collapseUp(MutableTreeNode parent, MutableTreeNode child) {
     return child;
   }
 
@@ -243,5 +243,4 @@ public class TaxonomyCollapsingStrategy implements CollapsingStrategy {
   }
 
   private AutoIncrementTermIdGenerator termIdGenerator = new AutoIncrementTermIdGenerator();
-
 }

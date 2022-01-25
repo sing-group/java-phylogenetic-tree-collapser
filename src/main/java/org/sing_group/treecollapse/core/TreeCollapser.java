@@ -64,26 +64,24 @@ public class TreeCollapser {
 
           for (MutableTreeNode sibling : siblings) {
 
-            if (collapsingStrategy.areMergeable(leafNode, sibling)) { ////// ARE
-                                                                        ////// MERGEABLE?
-              // merge
-              MutableTreeNode merged = collapsingStrategy.mergeNodes(leafNode, sibling);
+            if (collapsingStrategy.areCollapsible(leafNode, sibling)) {
+              MutableTreeNode collapsed = collapsingStrategy.collapseNodes(leafNode, sibling);
 
-              // remove merged nodes
+              // remove collapsed nodes
               Arrays.asList(leafNode, sibling).forEach(node -> {
                 parent.removeChild(node);
               });
 
-              parent.addChild(merged);
+              parent.addChild(collapsed);
 
               if (parent.getChildren().size() == 1) {
                 // grand parent
                 MutableTreeNode grandParent = parent.getParent();
 
                 if (grandParent != null) {
-                  MutableTreeNode collapsed = collapsingStrategy.collapse(parent, merged);
+                  MutableTreeNode collapsedUpChild = collapsingStrategy.collapseUp(parent, collapsed);
                   grandParent.removeChild(parent);
-                  grandParent.addChild(collapsed);
+                  grandParent.addChild(collapsedUpChild);
 
                 }
               }
